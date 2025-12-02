@@ -1,8 +1,8 @@
 # DigitalOcean Server Docs
 
-# Discord Bot Maintenance & Modification Guide
+## Discord Bot Maintenance & Modification Guide
 
-## Table of Contents
+### Table of Contents
 1. [Quick Reference Commands](#quick-reference-commands)
 2. [Managing Your Bot with PM2](#managing-your-bot-with-pm2)
 3. [Editing Your Bot Code](#editing-your-bot-code)
@@ -14,43 +14,43 @@
 
 ---
 
-## Quick Reference Commands
+### Quick Reference Commands
 
-### Navigate to Your Bot Directory
+#### Navigate to Your Bot Directory
 ```bash
 cd /opt/discord-bot
 ```
 
-### View Bot Status
+#### View Bot Status
 ```bash
 pm2 status
 ```
 
-### View Bot Logs
+#### View Bot Logs
 ```bash
 pm2 logs discord-bot
 ```
 
-### Restart Bot After Changes
+#### Restart Bot After Changes
 ```bash
 pm2 restart discord-bot
 ```
 
-### Edit Bot Code
+#### Edit Bot Code
 ```bash
 nano index.js
 ```
 
-### Check if Bot File Has Syntax Errors
+#### Check if Bot File Has Syntax Errors
 ```bash
 node -c index.js
 ```
 
 ---
 
-## Managing Your Bot with PM2
+### Managing Your Bot with PM2
 
-### Basic PM2 Commands
+#### Basic PM2 Commands
 
 **View all running bots:**
 ```bash
@@ -97,7 +97,7 @@ pm2 save
 pm2 monit
 ```
 
-### Managing Multiple Bots
+#### Managing Multiple Bots
 
 **View all bots:**
 ```bash
@@ -121,9 +121,9 @@ pm2 stop all
 
 ---
 
-## Editing Your Bot Code
+### Editing Your Bot Code
 
-### Step-by-Step Editing Process
+#### Step-by-Step Editing Process
 
 1. **Navigate to bot directory:**
    ```bash
@@ -163,7 +163,7 @@ pm2 stop all
    pm2 logs discord-bot
    ```
 
-### Nano Editor Quick Reference
+#### Nano Editor Quick Reference
 
 - **Navigate:** Arrow keys
 - **Jump to line:** `Ctrl+_` then type line number
@@ -176,13 +176,13 @@ pm2 stop all
 
 ---
 
-## Adding New Event Listeners
+### Adding New Event Listeners
 
-### Where to Add New Events
+#### Where to Add New Events
 
 New event listeners should be added **before** the final `client.login()` line (at the bottom of the file).
 
-### Template for Adding a New Event
+#### Template for Adding a New Event
 
 ```javascript
 // [Description of what this event does]
@@ -200,7 +200,7 @@ client.on(Events.EventName, async (parameter) => {
 });
 ```
 
-### Step-by-Step: Adding a New Event
+#### Step-by-Step: Adding a New Event
 
 1. **Open your bot file:**
    ```bash
@@ -231,9 +231,9 @@ client.on(Events.EventName, async (parameter) => {
 
 ---
 
-## Modifying Existing Events
+### Modifying Existing Events
 
-### Finding the Event You Want to Modify
+#### Finding the Event You Want to Modify
 
 **Search for an event:**
 ```bash
@@ -248,9 +248,9 @@ grep -n "GuildMemberAdd" index.js
 
 This shows you the line number where the event is defined.
 
-### Common Modifications
+#### Common Modifications
 
-#### 1. Change What Data Gets Sent to Webhook
+##### 1. Change What Data Gets Sent to Webhook
 
 **Find the `sendToWebhook` call** inside the event and modify the data object:
 
@@ -264,14 +264,14 @@ await sendToWebhook('guild_member_add', {
 });
 ```
 
-#### 2. Add Console Logging
+##### 2. Add Console Logging
 
 Add anywhere inside the event:
 ```javascript
 console.log(`Debug info: ${variable}`);
 ```
 
-#### 3. Add Conditional Logic
+##### 3. Add Conditional Logic
 
 ```javascript
 if (member.user.bot) {
@@ -283,7 +283,7 @@ if (member.user.bot) {
 // Regular processing for non-bots
 ```
 
-#### 4. Comment Out Code (Disable Without Deleting)
+##### 4. Comment Out Code (Disable Without Deleting)
 
 ```javascript
 // This line is disabled
@@ -298,9 +298,9 @@ if (member.user.bot) {
 
 ---
 
-## Common Event Templates
+### Common Event Templates
 
-### Voice State Update (User Joins/Leaves Voice Channel)
+#### Voice State Update (User Joins/Leaves Voice Channel)
 
 ```javascript
 // When a user joins, leaves, or switches voice channels
@@ -353,7 +353,7 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
 });
 ```
 
-### Reaction Add/Remove
+#### Reaction Add/Remove
 
 ```javascript
 // When a reaction is added to a message
@@ -386,7 +386,7 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
 });
 ```
 
-### Thread Create/Delete
+#### Thread Create/Delete
 
 ```javascript
 // When a thread is created
@@ -416,7 +416,7 @@ client.on(Events.ThreadDelete, async (thread) => {
 });
 ```
 
-### Emoji Create/Delete
+#### Emoji Create/Delete
 
 ```javascript
 // When an emoji is created
@@ -446,7 +446,7 @@ client.on(Events.GuildEmojiDelete, async (emoji) => {
 });
 ```
 
-### Invite Create/Delete
+#### Invite Create/Delete
 
 ```javascript
 // When an invite is created
@@ -481,9 +481,9 @@ client.on(Events.InviteDelete, async (invite) => {
 
 ---
 
-## Troubleshooting
+### Troubleshooting
 
-### Bot Won't Start
+#### Bot Won't Start
 
 **Check logs:**
 ```bash
@@ -519,7 +519,7 @@ pm2 logs discord-bot --lines 50
    nano .env
    ```
 
-### Bot Crashes Repeatedly
+#### Bot Crashes Repeatedly
 
 **Check PM2 status:**
 ```bash
@@ -535,7 +535,7 @@ pm2 logs discord-bot --lines 100
 
 Look for error messages and the line numbers mentioned.
 
-### Syntax Errors
+#### Syntax Errors
 
 **Common syntax errors:**
 
@@ -558,7 +558,7 @@ Look for error messages and the line numbers mentioned.
 node -c index.js
 ```
 
-### Webhook Not Receiving Data
+#### Webhook Not Receiving Data
 
 1. **Check webhook URL in .env:**
    ```bash
@@ -577,7 +577,7 @@ node -c index.js
    pm2 logs discord-bot | grep webhook
    ```
 
-### Bot Missing Permissions
+#### Bot Missing Permissions
 
 If events aren't firing, the bot might need additional permissions:
 
@@ -592,9 +592,9 @@ If events aren't firing, the bot might need additional permissions:
 
 ---
 
-## Working with Claude
+### Working with Claude
 
-### How to Request Code Modifications
+#### How to Request Code Modifications
 
 When asking Claude to modify your bot, provide:
 
@@ -610,7 +610,7 @@ When asking Claude to modify your bot, provide:
    - "I have multiple bots running on the same server"
    - "I want this to send different data to my webhook"
 
-### Example Requests
+#### Example Requests
 
 **Good request:**
 > "Can you add an event listener that tracks when someone creates a new thread in my Discord server? I want it to send the thread name, creator, and parent channel to my webhook."
@@ -621,7 +621,7 @@ When asking Claude to modify your bot, provide:
 **Good request:**
 > "Can you create a template for tracking emoji reactions that I can add to my bot? I want to know who reacted, with what emoji, and on which message."
 
-### Getting Help Debugging
+#### Getting Help Debugging
 
 If your bot isn't working:
 
@@ -639,7 +639,7 @@ If your bot isn't working:
    - "I expected it to send webhook data when someone joins, but nothing happens"
    - "The bot crashes every time someone gets kicked"
 
-### Updating Your Maintenance Doc
+#### Updating Your Maintenance Doc
 
 When you make changes or discover new useful commands, update this document:
 
@@ -654,7 +654,7 @@ Keep notes on:
 
 ---
 
-## File Structure Reference
+### File Structure Reference
 
 ```
 /opt/discord-bot/
@@ -672,9 +672,9 @@ Keep notes on:
 
 ---
 
-## Useful Terminal Commands
+### Useful Terminal Commands
 
-### File Management
+#### File Management
 
 **View file contents:**
 ```bash
@@ -706,7 +706,7 @@ grep -n "search term" index.js
 wc -l index.js
 ```
 
-### System Management
+#### System Management
 
 **Check disk space:**
 ```bash
@@ -728,7 +728,7 @@ ps aux | grep node
 uptime
 ```
 
-### Node.js & npm
+#### Node.js & npm
 
 **Check Node.js version:**
 ```bash
@@ -757,7 +757,7 @@ npm list
 
 ---
 
-## Quick Start Checklist for New Events
+### Quick Start Checklist for New Events
 
 - [ ] Open bot file: `nano index.js`
 - [ ] Add event listener before `client.login()`
@@ -771,7 +771,7 @@ npm list
 
 ---
 
-## Additional Resources
+### Additional Resources
 
 **Discord.js Documentation:**
 - Full event list: https://discord.js.org/#/docs/discord.js/main/class/Client
@@ -785,7 +785,7 @@ npm list
 
 ---
 
-## Version History
+### Version History
 
 - **v1.0** - Initial documentation
 - Document created: [Current Date]
