@@ -1,6 +1,6 @@
 # DigitalOcean Server Docs
 
-## Discord Bot Maintenance & Modification Guide
+## Discord Event Bot - Server Maintenance & Modification Guide
 
 ### Table of Contents
 1. [Quick Reference Commands](#quick-reference-commands)
