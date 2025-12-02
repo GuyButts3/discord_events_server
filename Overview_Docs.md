@@ -3,6 +3,7 @@
 ## Discord Event Bot - Server Maintenance & Modification Guide
 
 ### Table of Contents
+0. [Helpful Links](#helpful-links)
 1. [Quick Reference Commands](#quick-reference-commands)
 2. [Managing Your Bot with PM2](#managing-your-bot-with-pm2)
 3. [Editing Your Bot Code](#editing-your-bot-code)
@@ -13,6 +14,10 @@
 8. [Working with Claude](#working-with-claude)
 
 ---
+
+### Helpful Links
+
+1. [Discord API Docs - Recieve Gateway Events](https://discord.com/developers/docs/events/gateway-events#receive-events)
 
 ### Quick Reference Commands
 
