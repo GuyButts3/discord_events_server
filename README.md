@@ -362,7 +362,7 @@ The `joinMethod` field can be:
 
 #### Where to Add New Events
 
-New event listeners should be added **before** the final `client.login()` line (at the bottom of the file).
+New event listeners should be added **before** the final `client.login()` line (at the bottom of the file). Refer to the `index.js` file in this same repo for code examples.
 
 #### Template for Adding a New Event
 
