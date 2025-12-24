@@ -1,9 +1,6 @@
-# Discord Event Server
-
-## Server Maintenance & Modification Guide
+## Discord Event Server - Bot Maintenance & Modification Guide
 
 ### Table of Contents
-0. [Helpful Links](#helpful-links)
 1. [Quick Reference Commands](#quick-reference-commands)
 2. [Managing Your Bot with PM2](#managing-your-bot-with-pm2)
 3. [Editing Your Bot Code](#editing-your-bot-code)
@@ -14,10 +11,6 @@
 8. [Working with Claude](#working-with-claude)
 
 ---
-
-### Helpful Links
-
-1. [Discord API Docs - Recieve Gateway Events](https://discord.com/developers/docs/events/gateway-events#receive-events)
 
 ### Quick Reference Commands
 
@@ -54,6 +47,111 @@ node -c index.js
 ---
 
 ### Managing Your Bot with PM2
+
+#### Setting Up Additional Listener Bots
+
+If you manage multiple Discord servers, each with their own admin/automation bot, you can run multiple bot instances on the same DigitalOcean droplet.
+
+**Step-by-Step: Adding a Second Bot**
+
+1. **Create a new directory for the second bot:**
+   ```bash
+   mkdir -p /opt/discord-bot-2
+   cd /opt/discord-bot-2
+   ```
+
+2. **Initialize npm:**
+   ```bash
+   npm init -y
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   npm install discord.js dotenv axios
+   ```
+
+4. **Copy the bot code from your first bot:**
+   ```bash
+   cp /opt/discord-bot/index.js /opt/discord-bot-2/index.js
+   ```
+
+5. **Create the .env file for bot #2:**
+   ```bash
+   nano .env
+   ```
+   
+   Add the second bot's credentials:
+   ```
+   DISCORD_TOKEN=your_second_bot_token_here
+   CLIENT_ID=your_second_bot_client_id
+   WEBHOOK_URL=https://your-n8n-webhook-url
+   ```
+   
+   Save (Ctrl+X, Y, Enter)
+
+6. **Start the second bot with PM2:**
+   ```bash
+   pm2 start index.js --name discord-bot-2
+   pm2 save
+   ```
+
+7. **Verify both bots are running:**
+   ```bash
+   pm2 status
+   ```
+   
+   You should see:
+   ```
+   ┌─────┬──────────────────┬─────────┐
+   │ id  │ name             │ status  │
+   ├─────┼──────────────────┼─────────┤
+   │ 0   │ discord-bot      │ online  │
+   │ 1   │ discord-bot-2    │ online  │
+   └─────┴──────────────────┴─────────┘
+   ```
+
+**Adding a Third, Fourth, Fifth Bot, etc.**
+
+Repeat the process with incremental directory names:
+
+```bash
+# Bot #3
+mkdir -p /opt/discord-bot-3
+cd /opt/discord-bot-3
+npm init -y
+npm install discord.js dotenv axios
+cp /opt/discord-bot/index.js /opt/discord-bot-3/index.js
+nano .env  # Add bot #3 credentials
+pm2 start index.js --name discord-bot-3
+pm2 save
+
+# Bot #4
+mkdir -p /opt/discord-bot-4
+cd /opt/discord-bot-4
+# ... repeat process
+```
+
+**Managing Multiple Bots**
+
+All bots will send events to the same n8n webhook. You can differentiate them by the `guildId` and `guildName` in the webhook payload.
+
+**Useful commands for multiple bots:**
+```bash
+# View all bots
+pm2 status
+
+# View logs for a specific bot
+pm2 logs discord-bot-2
+
+# Restart a specific bot
+pm2 restart discord-bot-2
+
+# Restart all bots
+pm2 restart all
+
+# Stop all bots
+pm2 stop all
+```
 
 #### Basic PM2 Commands
 
@@ -178,6 +276,85 @@ pm2 stop all
 - **Save:** `Ctrl+O` then Enter
 - **Exit:** `Ctrl+X`
 - **Undo:** `Alt+U`
+
+---
+
+### Invite Tracking System
+
+The bot includes an invite tracking system that detects which invite link was used when a member joins your server.
+
+#### How It Works
+
+1. **On Startup:** The bot caches all invite codes and their use counts for every server
+2. **On Member Join:** The bot compares current invite uses with cached values to find which invite was used
+3. **On Invite Create/Delete:** The cache is automatically updated
+
+#### Permissions Required
+
+Make sure your bot has the following permission:
+- **Manage Server** or **View Invites** permission in your Discord server
+
+#### Data Provided in Webhook
+
+When a member joins, the `guild_member_add` event includes:
+
+```json
+{
+  "event": "guild_member_add",
+  "data": {
+    "userId": "123456789",
+    "tag": "NewUser#1234",
+    "joinMethod": "invite",
+    "inviteUsed": {
+      "code": "abc123",
+      "uses": 5,
+      "maxUses": "unlimited",
+      "channelId": "987654321",
+      "channelName": "welcome",
+      "temporary": false,
+      "expiresAt": null
+    },
+    "inviter": {
+      "id": "555666777",
+      "tag": "Moderator#1234",
+      "username": "Moderator"
+    }
+  }
+}
+```
+
+#### Join Methods
+
+The `joinMethod` field can be:
+- `invite` - Joined via a tracked invite link
+- `vanity_url` - Joined via server's vanity URL (if available)
+- `discovery_or_other` - Joined via server discovery or other method
+- `unknown` - Could not determine join method
+- `error_tracking` - An error occurred while tracking
+
+#### Troubleshooting Invite Tracking
+
+**If invite tracking isn't working:**
+
+1. **Check bot permissions:**
+   ```
+   Discord Server → Server Settings → Roles → Your Bot Role
+   Enable: "View Invites" or "Manage Server"
+   ```
+
+2. **Check bot intents (already configured):**
+   - The bot already has `GuildInvites` intent enabled
+
+3. **Check logs for errors:**
+   ```bash
+   pm2 logs discord-bot | grep "invite"
+   ```
+
+4. **Manually refresh cache:**
+   The cache refreshes automatically, but if you suspect issues, restart the bot:
+   ```bash
+   pm2 restart discord-bot
+   ```
 
 ---
 
